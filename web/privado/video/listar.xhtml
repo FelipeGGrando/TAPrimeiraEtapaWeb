@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/templates/template.xhtml">
+        <ui:define name="titulo">Listagem de Vídeos</ui:define>
+        <ui:define name="conteudo">
+            <h:form id="formListagem" prependId="false">
+                <p:growl/>
+                <p:commandButton actionListener="#{controleVideo.novo()}"
+                                 value="Novo Vídeo" icon="ui-icon-plus"
+                                 oncomplete="PF('dlg').show();"
+                                 update=":formEdicao"/>
+                <p:dataTable value="#{controleVideo.dao.listarTodos}" var="obj">
+                    <f:facet name="header">
+                        <p:outputLabel value="Listagem de Videos"/>
+                    </f:facet>
+                    <p:column headerText="ID">
+                        <p:outputLabel value="#{obj.id}"/>
+                    </p:column>
+                    <p:column headerText="Título">
+                        <p:outputLabel value="#{obj.titulo}"/>
+                    </p:column>
+                    <p:column headerText="Link">
+                        <p:outputLabel value="#{obj.link}"/>
+                    </p:column>
+                    <p:column headerText="Publicação">
+                        <p:outputLabel value="#{obj.publicacao}">
+                            <f:converter converterId="converterCalendar"/>
+                        </p:outputLabel>
+                    </p:column>
+                     <p:column headerText="Público">
+                         <p:outputLabel value="#{obj.publico}">
+                             <f:converter converterId="converterBoolean"/>
+                         </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Visualizações">
+                        <p:outputLabel value="#{obj.quantidadeVisualizacoes}"/>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <div align="center">
+                            <p:commandButton
+                                actionListener="#{controleVideo.editar(obj.id)}"
+                                icon="ui-icon-pencil"
+                                update=":formEdicao"
+                                process="@form"
+                                oncomplete="PF('dlg').show();"
+                                id="btnAlterar"/>
+                            <p:commandButton
+                                actionListener="#{controleVideo.remover(obj.id)}"
+                                icon="ui-icon-trash"
+                                update="@form"
+                                process="@form"
+                                id="btnExcluir"
+                                onclick="if (!confirm('Confirma a exclusão do objeto'))
+                                            return false"/>
+                        </div>
+                    </p:column>                    
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+        <ui:define name="dialogos">
+            <p:dialog widgetVar="dlg" header="Edição" resizable="false" modal="true">
+                <h:form id="formEdicao" prependId="false">
+                    <p:growl/>
+                    <div align="center">
+                        <p:panelGrid columns="2">
+                            <f:facet name="footer">
+                                <div align="center">
+                                    <p:commandButton value="Salvar"
+                                                     icon="ui-icon-disk"
+                                                     update=":formEdicao :formListagem"
+                                                     actionListener="#{controleVideo.salvar()}"
+                                                     oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                </div>
+                            </f:facet>
+                            <p:outputLabel value="ID"/>
+                            <p:inputText value="#{controleVideo.objeto.id}" readonly="true"
+                                         size="5"/>
+                            <p:outputLabel value="Titulo" for="txtTitulo"/>
+                            <p:inputText value="#{controleVideo.objeto.titulo}"
+                                         id="txtTitulo" size="50" maxlength="50"/>
+                            <p:outputLabel value="Link" for="txtLink"/>
+                            <p:inputText value="#{controleVideo.objeto.link}"
+                                         id="txtLink" size="100" maxlength="500"/>
+                            <p:outputLabel value="Público" for="selectPublico"/>
+                            <p:selectOneMenu value="#{controleVideo.objeto.publico}" required="true" id="selectPublico">
+                                <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
+                                <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Publicação" for="txtPublicacao"/>
+                            <p:calendar  value="#{controleVideo.objeto.publicacao}"
+                                        id="txtPublicacao"
+                                        mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                <f:converter converterId="converterCalendar"/>
+                            </p:calendar>
+                            <p:outputLabel value="Visuzaliações" for="txtVisualizacoes"/>
+                             <p:inputText value="#{controleVideo.objeto.quantidadeVisualizacoes}"
+                                          id="txtVisualizacoes" size="100" maxlength="500"/>
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+                <ui:include src="/templates/ajaxstatus.xhtml"/>
+            </p:dialog>
+        </ui:define>          
+    </ui:composition>
+</html>
