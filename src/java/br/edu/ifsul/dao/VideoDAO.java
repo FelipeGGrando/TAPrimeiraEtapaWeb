@@ -8,7 +8,7 @@ package br.edu.ifsul.dao;
 import br.edu.ifsul.modelo.Video;
 import java.io.Serializable;
 import java.util.List;
-import javax.ejb.Stateless;
+import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -17,7 +17,7 @@ import javax.persistence.PersistenceContext;
  * @author Felipe
  */
 
-@Stateless
+@Stateful
 public class VideoDAO implements Serializable {
     @PersistenceContext(unitName = "TAPrimeiraEtapaWebPU")
     private EntityManager em;
