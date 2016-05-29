@@ -156,7 +156,7 @@
                         </p:tab>
                         <p:tab title="Amigos">
                             <p:dataTable value="#{controlePessoa.objeto.amigos}" var="amigo" rowIndexVar="idx" id="listaAmigos">
-                                <f:facet name="Header">
+                                <f:facet name="header">
                                     <p:commandButton value="Adicionar Amigo" actionListener="#{controlePessoa.novoAmigo()}"
                                                      update=":formAmigo" icon="ui-icon-plus" id="btnNovoAmigo" process="btnNovoAmigo"
                                                      oncomplete="PF('dlgAmigo').show();"/>
@@ -167,7 +167,7 @@
                                 <p:column headerText="Nome">
                                     <p:outputLabel value="#{amigo.nome}"/>
                                 </p:column>
-                                 <p:column headerText="Cidade">
+                                <p:column headerText="Cidade">
                                     <p:outputLabel value="#{amigo.cidade}"/>
                                 </p:column>
                                 <p:column headerText="Ações">
@@ -177,7 +177,7 @@
                                                          update=":formAmigo" process="btnAlterarAmigo"
                                                          oncomplete="PF('dlgAmigo').show();"/>
                                         <p:commandButton id="btnRemoverAmigo" icon="ui-icon-trash"
-                                                         actionListener="#{controleVenda.removerItem(idx)}"
+                                                         actionListener="#{controlePessoa.removerAmigo(idx)}"
                                                          update="listaAmigos :formListagem:growl"
                                                          process="btnRemoverAmigo"
                                                          onclick="if (!confirm('Confirma a exclusão do objeto?'))
@@ -194,7 +194,22 @@
                 <h:form id="formAmigo">
                     <p:growl/>
                     <div align="center">
-                        
+                        <p:panelGrid columns="2">
+                            <f:facet name="footer">
+                                <p:commandButton id="btnAdicionarAmigo" value="Salvar" icon="ui-icon-disk"
+                                                 actionListener="#{controlePessoa.salvarAmigo()}"
+                                                 update=":formEdicao:tab:listaAmigos :formAmigo"
+                                                 process="@form" oncomplete="if(!args.validationFailed) {PF('dlgAmigo').hide();}"/>
+                            </f:facet>
+                            <p:outputLabel value="Amigo" for="selectAmigo"/>
+                            <p:selectOneMenu value="#{controlePessoa.objeto.amigos}"
+                                             id="selectAmigo">
+                                <f:converter converterId="converterPessoa"/>
+                                <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
+                                <f:selectItems value="#{controlePessoa.dao.listaTodos}"
+                                               var="a" itemLabel="#{a.nome}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
                     </div>
                 </h:form>
             </p:dialog>
