@@ -9,14 +9,44 @@
         <ui:define name="titulo">Listagem de Galerias</ui:define>
         <ui:define name="conteudo">
             <h:form id="formListagem" prependId="false">
-                <p:growl/>
+                <p:growl id="growl"/>
                 <p:commandButton actionListener="#{controleGaleria.novo()}"
                                  value="Nova Galeria" icon="ui-icon-plus"
                                  oncomplete="PF('dlg').show();"
                                  update=":formEdicao"/>
-                <p:dataTable value="#{controleGaleria.dao.listaTodos}" var="obj">
+                <div align="center">
+                    <p:panelGrid columns="12">
+                        <p:outputLabel value="Ordem: "/>
+                        <p:selectOneMenu value="#{controleGaleria.dao.ordem}">
+                            <f:selectItem itemLabel="Titulo" itemValue="titulo"/>
+                            <f:selectItem itemLabel="Pessoa" itemValue="pessoa.nome"/>
+                            <p:ajax update="listagem"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Filtro: "/>
+                        <p:inputText value="#{controleGaleria.dao.filtro}">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton value="Filtrar" update="listagem"/>
+                        <p:outputLabel value="Máximo de objetos"/>
+                        <p:inputText value="#{controleGaleria.dao.maximoObjetos}" size="5">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton action="#{controleGaleria.dao.primeiro}" value="Primeiro" 
+                                         update="listagem"/>
+                        <p:commandButton action="#{controleGaleria.dao.anterior()}" value="Anterior"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controleGaleria.dao.proximo()}" value="Próximo"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controleGaleria.dao.ultimo()}" value="Último"
+                                         update="listagem"/>
+                    </p:panelGrid>
+                </div>
+                <p:dataTable value="#{controleGaleria.dao.listaTodos}" var="obj" id="listagem">
                     <f:facet name="header">
                         <p:outputLabel value="Listagem de Galerias"/>
+                    </f:facet>
+                    <f:facet name="footer">
+                        <p:outputLabel value="#{controleGaleria.dao.mensagemNavegacao}"/>
                     </f:facet>
                     <p:column headerText="ID">
                         <p:outputLabel value="#{obj.id}"/>
@@ -56,37 +86,87 @@
             <p:dialog widgetVar="dlg" header="Edição" resizable="false" modal="true">
                 <h:form id="formEdicao" prependId="false">
                     <p:growl/>
-                    <div align="center">
-                        <p:panelGrid columns="2">
-                            <f:facet name="footer">
-                                <div align="center">
-                                    <p:commandButton value="Salvar"
-                                                     icon="ui-icon-disk"
-                                                     update=":formEdicao :formListagem"
-                                                     actionListener="#{controleGaleria.salvar()}"
-                                                     oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
-                                </div>
-                            </f:facet>
-                            <p:outputLabel value="ID"/>
-                            <p:inputText value="#{controleGaleria.objeto.id}" readonly="true"
-                                         size="5"/>
-                            <p:outputLabel value="Titulo" for="txtTitulo"/>
-                            <p:inputText value="#{controleGaleria.objeto.titulo}"
-                                         id="txtTitulo" size="50" maxlength="50"/>
-                            <p:outputLabel value="Descrição" for="edtDescricao"/>
-                            <p:editor id="edtDescricao" value="#{controleGaleria.objeto.descricao}" 
-                                      width="500" height="150"/>
-                            <p:outputLabel value="Pessoa" for="selectPessoa"/>
-                            <p:selectOneMenu value="#{controleGaleria.objeto.pessoa}"
-                                             id="selectPessoa">
-                                <f:converter converterId="converterPessoa"/>
-                                <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
-                                <f:selectItems value="#{controlePessoa.dao.listaTodos}"
-                                               var="p" itemLabel="#{p.nome}"/>
-                            </p:selectOneMenu>
+                    <p:tabView id="tab">
+                        <p:tab title="Dados Principais">
+                            <div align="center">
+                                <p:panelGrid columns="2">
+                                    <f:facet name="footer">
+                                        <div align="center">
+                                            <p:commandButton value="Salvar"
+                                                             icon="ui-icon-disk"
+                                                             update=":formEdicao :formListagem"
+                                                             actionListener="#{controleGaleria.salvar()}"
+                                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                        </div>
+                                    </f:facet>
+                                    <p:outputLabel value="ID"/>
+                                    <p:inputText value="#{controleGaleria.objeto.id}" readonly="true"
+                                                 size="5"/>
+                                    <p:outputLabel value="Titulo" for="txtTitulo"/>
+                                    <p:inputText value="#{controleGaleria.objeto.titulo}"
+                                                 id="txtTitulo" size="50" maxlength="50"/>
+                                    <p:outputLabel value="Descrição" for="edtDescricao"/>
+                                    <p:editor id="edtDescricao" value="#{controleGaleria.objeto.descricao}" 
+                                              width="500" height="150"/>
+                                    <p:outputLabel value="Pessoa" for="selectPessoa"/>
+                                    <p:selectOneMenu value="#{controleGaleria.objeto.pessoa}"
+                                                     id="selectPessoa">
+                                        <f:converter converterId="converterPessoa"/>
+                                        <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
+                                        <f:selectItems value="#{controlePessoa.dao.listaTodos}"
+                                                       var="p" itemLabel="#{p.nome}"/>
+                                    </p:selectOneMenu>
 
-                        </p:panelGrid>
-                    </div>
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Fotos">
+                            <p:dataTable value="#{controleGaleria.objeto.fotos}" var="foto" rowIndexVar="idx" id="listaFotos">
+                                <f:facet name="header">
+                                    <p:commandButton value="Nova Foto" actionListener="#{controleGaleria.novaFoto()}"
+                                                     update=":formFoto" icon="ui-icon-plus" id="btnNovaFoto" process="btnNovaFoto"
+                                                     oncomplete="PF('dlgFoto').show();"/>
+                                </f:facet>
+                                <p:outputLabel value="ID"/>
+                                <p:inputText value="#{foto.id}" readonly="true"
+                                             size="5"/>
+                                <p:outputLabel value="Titulo" for="txtTitulo"/>
+                                <p:inputText value="#{foto.titulo}"
+                                             id="txtTitulo" size="50" maxlength="50"/>
+                                <p:outputLabel value="Endereço" for="txtLink"/>
+                                <p:inputText value="#{foto.endereco}"
+                                             id="txtLink" size="100" maxlength="500"/>
+                                <p:outputLabel value="Pública" for="selectPublico"/>
+                                <p:selectOneMenu value="#{foto.publico}" required="true" id="selectPublico">
+                                    <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
+                                    <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel value="Publicação" for="txtPublicacao"/>
+                                <p:calendar  value="#{foto.publicacao}"
+                                             id="txtPublicacao"
+                                             mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                    <f:converter converterId="converterCalendar"/>
+                                </p:calendar>
+                                <p:outputLabel value="Visuzaliações" for="txtVisualizacoes"/>
+                                <p:inputText value="#{foto.quantidadeVisualizacoes}"
+                                             id="txtVisualizacoes" size="100" maxlength="500"/>
+                                <p:column headerText="Ações">
+                                    <div align="center">
+                                        <p:commandButton id="btnAlterarFoto" icon="ui-icon-pencil" 
+                                                         actionListener="#{controleGaleria.alterarFoto(idx)}"
+                                                         update=":formFoto" process="btnAlterarFoto"
+                                                         oncomplete="PF('dlgFoto').show();"/>
+                                        <p:commandButton id="btnRemoverFoto" icon="ui-icon-trash"
+                                                         actionListener="#{controleGaleria.removerFoto(idx)}"
+                                                         update="listaFotos :formListagem:growl"
+                                                         process="btnRemoverFoto"
+                                                         onclick="if (!confirm('Confirma a exclusão do objeto?'))
+                                                                     return false"/>
+                                    </div>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
                 </h:form>
                 <ui:include src="/templates/ajaxstatus.xhtml"/>
             </p:dialog>

@@ -5,7 +5,9 @@
  */
 package br.edu.ifsul.controle;
 
+import br.edu.ifsul.dao.FotoDAO;
 import br.edu.ifsul.dao.GaleriaDAO;
+import br.edu.ifsul.modelo.Foto;
 import br.edu.ifsul.modelo.Galeria;
 import java.io.Serializable;
 import javax.ejb.EJB;
@@ -23,11 +25,35 @@ public class ControleGaleria implements Serializable {
     @EJB
     private GaleriaDAO dao;
     private Galeria objeto;
+    @EJB
+    private FotoDAO<Foto> daoFoto;
+    private Boolean novaFoto;
+    private Foto foto;
 
     public ControleGaleria() {
 
     }
+    
+        public void novaFoto() {
+        foto = new Foto();
+        novaFoto = true;
+    }
 
+    public void alterarFoto(int index) {
+        foto = objeto.getFotos().get(index);
+        novaFoto = false;
+    }
+
+    public void salvarFoto() {
+        objeto.adicionarFoto(foto);
+        UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
+    }
+
+    public void removerFoto(int index) {
+        objeto.removerFoto(index);
+        UtilMensagem.mensagemInformacao("Endereço removido com sucesso!");
+    }
+    
     public String listar() {
         return "/privado/galeria/listar?faces-redirect=true";
     }
@@ -81,5 +107,29 @@ public class ControleGaleria implements Serializable {
 
     public void setObjeto(Galeria objeto) {
         this.objeto = objeto;
+    }
+
+    public FotoDAO<Foto> getDaoFoto() {
+        return daoFoto;
+    }
+
+    public void setDaoFoto(FotoDAO<Foto> daoFoto) {
+        this.daoFoto = daoFoto;
+    }
+
+    public Boolean getNovaFoto() {
+        return novaFoto;
+    }
+
+    public void setNovaFoto(Boolean novaFoto) {
+        this.novaFoto = novaFoto;
+    }
+
+    public Foto getFoto() {
+        return foto;
+    }
+
+    public void setFoto(Foto foto) {
+        this.foto = foto;
     }
 }
