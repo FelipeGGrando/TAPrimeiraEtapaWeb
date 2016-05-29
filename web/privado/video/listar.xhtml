@@ -9,11 +9,37 @@
         <ui:define name="titulo">Listagem de Vídeos</ui:define>
         <ui:define name="conteudo">
             <h:form id="formListagem" prependId="false">
-                <p:growl/>
+                <p:growl id="growl"/>
                 <p:commandButton actionListener="#{controleVideo.novo()}"
                                  value="Novo Vídeo" icon="ui-icon-plus"
                                  oncomplete="PF('dlg').show();"
                                  update=":formEdicao"/>
+                <div align="center">
+                    <p:panelGrid columns="12">
+                        <p:outputLabel value="Ordem: "/>
+                        <p:selectOneMenu value="#{controleVideo.dao.ordem}">
+                            <f:selectItem itemLabel="Título" itemValue="titulo"/>
+                            <p:ajax update="listagem"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Filtro: "/>
+                        <p:inputText value="#{controleVideo.dao.filtro}">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton value="Filtrar" update="listagem"/>
+                        <p:outputLabel value="Máximo de objetos"/>
+                        <p:inputText value="#{controleVideo.dao.maximoObjetos}" size="5">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton action="#{controleVideo.dao.primeiro}" value="Primeiro" 
+                                         update="listagem"/>
+                        <p:commandButton action="#{controleVideo.dao.anterior()}" value="Anterior"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controleVideo.dao.proximo()}" value="Próximo"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controleVideo.dao.ultimo()}" value="Último"
+                                         update="listagem"/>
+                    </p:panelGrid>
+                </div>
                 <p:dataTable value="#{controleVideo.dao.listaTodos}" var="obj">
                     <f:facet name="header">
                         <p:outputLabel value="Listagem de Videos"/>
@@ -32,10 +58,10 @@
                             <f:converter converterId="converterCalendar"/>
                         </p:outputLabel>
                     </p:column>
-                     <p:column headerText="Público">
-                         <p:outputLabel value="#{obj.publico}">
-                             <f:converter converterId="converterBoolean"/>
-                         </p:outputLabel>
+                    <p:column headerText="Público">
+                        <p:outputLabel value="#{obj.publico}">
+                            <f:converter converterId="converterBoolean"/>
+                        </p:outputLabel>
                     </p:column>
                     <p:column headerText="Visualizações">
                         <p:outputLabel value="#{obj.quantidadeVisualizacoes}"/>
@@ -66,44 +92,119 @@
             <p:dialog widgetVar="dlg" header="Edição" resizable="false" modal="true">
                 <h:form id="formEdicao" prependId="false">
                     <p:growl/>
+                    <p:tabView id="tab">
+                        <p:tab title="Dados Principais">
+                            <div align="center">
+                                <p:panelGrid columns="2">
+                                    <f:facet name="footer">
+                                        <div align="center">
+                                            <p:commandButton value="Salvar"
+                                                             icon="ui-icon-disk"
+                                                             update=":formEdicao :formListagem"
+                                                             actionListener="#{controleVideo.salvar()}"
+                                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                        </div>
+                                    </f:facet>
+                                    <p:outputLabel value="ID"/>
+                                    <p:inputText value="#{controleVideo.objeto.id}" readonly="true"
+                                                 size="5"/>
+                                    <p:outputLabel value="Titulo" for="txtTitulo"/>
+                                    <p:inputText value="#{controleVideo.objeto.titulo}"
+                                                 id="txtTitulo" size="50" maxlength="50"/>
+                                    <p:outputLabel value="Link" for="txtLink"/>
+                                    <p:inputText value="#{controleVideo.objeto.link}"
+                                                 id="txtLink" size="100" maxlength="500"/>
+                                    <p:outputLabel value="Público" for="selectPublico"/>
+                                    <p:selectOneMenu value="#{controleVideo.objeto.publico}" required="true" id="selectPublico">
+                                        <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
+                                        <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Publicação" for="txtPublicacao"/>
+                                    <p:calendar  value="#{controleVideo.objeto.publicacao}"
+                                                 id="txtPublicacao"
+                                                 mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:calendar>
+                                    <p:outputLabel value="Visuzaliações" for="txtVisualizacoes"/>
+                                    <p:inputText value="#{controleVideo.objeto.quantidadeVisualizacoes}"
+                                                 id="txtVisualizacoes" size="100" maxlength="500"/>
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Comentários">
+                            <p:dataTable value="#{controleVideo.objeto.comentarios}" 
+                                         var="comentario" rowIndexVar="idx" id="listaComentarios">
+                                <f:facet name="header">
+                                    <p:commandButton value="Novo Comentário" actionListener="#{controleVideo.novoComentario()}"
+                                                     update=":formComentario" icon="ui-icon-plus" id="btnNovoComentario" process="btnNovoComentario"
+                                                     oncomplete="PF('dlgComentario').show();"/>
+                                </f:facet>
+                                <p:column headerText="ID">
+                                    <p:outputLabel value="#{comentario.id}"/>
+                                </p:column>
+                                <p:column headerText="Conteúdo">
+                                    <p:outputLabel value="#{comentario.conteudo}"/>
+                                </p:column>
+                                <p:column headerText="Pessoa">
+                                    <p:outputLabel value="#{comentario.pessoa.nome}"/>
+                                </p:column>
+                                <p:column headerText="Publicação">
+                                    <p:outputLabel value="#{comentario.publicacao}">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:outputLabel>
+                                </p:column>
+
+                                <p:column headerText="Ações">
+                                    <div align="center">
+                                        <p:commandButton id="btnAlterarComentario" icon="ui-icon-pencil" 
+                                                         actionListener="#{controleVideo.alterarComentario(idx)}"
+                                                         update=":formComentario" process="btnAlterarComentario"
+                                                         oncomplete="PF('dlgComentario').show();"/>
+                                        <p:commandButton id="btnRemoverComentario" icon="ui-icon-trash"
+                                                         actionListener="#{controleVideo.removerComentario(idx)}"
+                                                         update="listaComentarios :formListagem:growl"
+                                                         process="btnRemoverComentario"
+                                                         onclick="if (!confirm('Confirma a exclusão do objeto?'))
+                                                                     return false"/>
+                                    </div>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+                <ui:include src="/templates/ajaxstatus.xhtml"/>
+            </p:dialog>
+            <p:dialog header="Edição de Comentário" widgetVar="dlgComentario" resizable="false" modal="true">
+                <h:form id="formComentario">
+                    <p:growl/>
                     <div align="center">
                         <p:panelGrid columns="2">
                             <f:facet name="footer">
-                                <div align="center">
-                                    <p:commandButton value="Salvar"
-                                                     icon="ui-icon-disk"
-                                                     update=":formEdicao :formListagem"
-                                                     actionListener="#{controleVideo.salvar()}"
-                                                     oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
-                                </div>
+                                <p:commandButton id="btnAdicionarComentario" value="Salvar" icon="ui-icon-disk"
+                                                 actionListener="#{controleVideo.salvarComentario()}"
+                                                 update=":formEdicao:tab:listaComentarios :formComentario"
+                                                 process="@form" oncomplete="if(!args.validationFailed) {PF('dlgComentario').hide();}"/>
                             </f:facet>
-                            <p:outputLabel value="ID"/>
-                            <p:inputText value="#{controleVideo.objeto.id}" readonly="true"
-                                         size="5"/>
-                            <p:outputLabel value="Titulo" for="txtTitulo"/>
-                            <p:inputText value="#{controleVideo.objeto.titulo}"
-                                         id="txtTitulo" size="50" maxlength="50"/>
-                            <p:outputLabel value="Link" for="txtLink"/>
-                            <p:inputText value="#{controleVideo.objeto.link}"
-                                         id="txtLink" size="100" maxlength="500"/>
-                            <p:outputLabel value="Público" for="selectPublico"/>
-                            <p:selectOneMenu value="#{controleVideo.objeto.publico}" required="true" id="selectPublico">
-                                <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
-                                <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                            <p:outputLabel value="Conteúdo" for="edtConteudo"/>
+                            <p:editor id="edtConteudo" value="#{controleVideo.comentario.conteudo}" 
+                                      width="500" height="150"/>
+                            <p:outputLabel value="Pessoa" for="selectPessoa"/>
+                            <p:selectOneMenu value="#{controleVideo.comentario.pessoa}"
+                                             id="selectAmigo">
+                                <f:converter converterId="converterPessoa"/>
+                                <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
+                                <f:selectItems value="#{controlePessoa.dao.listaTodos}"
+                                               var="p" itemLabel="#{p.nome}"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="Publicação" for="txtPublicacao"/>
-                            <p:calendar  value="#{controleVideo.objeto.publicacao}"
+                            <p:calendar value="#{controleVideo.comentario.publicacao}"
                                         id="txtPublicacao"
                                         mask="true" pattern="dd/MM/yyyy" navigator="true">
                                 <f:converter converterId="converterCalendar"/>
                             </p:calendar>
-                            <p:outputLabel value="Visuzaliações" for="txtVisualizacoes"/>
-                             <p:inputText value="#{controleVideo.objeto.quantidadeVisualizacoes}"
-                                          id="txtVisualizacoes" size="100" maxlength="500"/>
                         </p:panelGrid>
                     </div>
                 </h:form>
-                <ui:include src="/templates/ajaxstatus.xhtml"/>
             </p:dialog>
         </ui:define>          
     </ui:composition>

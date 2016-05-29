@@ -182,27 +182,27 @@
                                                  process="@form" oncomplete="if(!args.validationFailed) {PF('dlgFoto').hide();}"/>
                             </f:facet>
                             <p:outputLabel value="ID"/>
-                            <p:inputText value="#{foto.id}" readonly="true"
+                            <p:inputText value="#{controleGaleria.foto.id}" readonly="true"
                                          size="5"/>
                             <p:outputLabel value="Titulo" for="txtTitulo"/>
-                            <p:inputText value="#{foto.titulo}"
+                            <p:inputText value="#{controleGaleria.foto.titulo}"
                                          id="txtTitulo" size="50" maxlength="50"/>
                             <p:outputLabel value="Endereço" for="txtLink"/>
-                            <p:inputText value="#{foto.endereco}"
+                            <p:inputText value="#{controleGaleria.foto.endereco}"
                                          id="txtLink" size="100" maxlength="500"/>
                             <p:outputLabel value="Pública" for="selectPublico"/>
-                            <p:selectOneMenu value="#{foto.publico}" required="true" id="selectPublico">
+                            <p:selectOneMenu value="#{controleGaleria.foto.publico}" required="true" id="selectPublico">
                                 <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
                                 <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="Publicação" for="txtPublicacao"/>
-                            <p:calendar  value="#{foto.publicacao}"
+                            <p:calendar  value="#{controleGaleria.foto.publicacao}"
                                          id="txtPublicacao"
                                          mask="true" pattern="dd/MM/yyyy" navigator="true">
                                 <f:converter converterId="converterCalendar"/>
                             </p:calendar>
                             <p:outputLabel value="Visuzaliações" for="txtVisualizacoes"/>
-                            <p:inputText value="#{foto.quantidadeVisualizacoes}"
+                            <p:inputText value="#{controleGaleria.foto.quantidadeVisualizacoes}"
                                          id="txtVisualizacoes" size="100" maxlength="500"/>
                         </p:panelGrid>
                     </div>
