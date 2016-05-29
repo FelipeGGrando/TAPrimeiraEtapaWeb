@@ -5,7 +5,9 @@
  */
 package br.edu.ifsul.controle;
 
+import br.edu.ifsul.dao.ComentarioDAO;
 import br.edu.ifsul.dao.VideoDAO;
+import br.edu.ifsul.modelo.Comentario;
 import br.edu.ifsul.modelo.Video;
 import java.io.Serializable;
 import javax.ejb.EJB;
@@ -14,7 +16,8 @@ import javax.faces.bean.SessionScoped;
 
 /**
  *
-import javax.ejb.EJB;
+ * import javax.ejb.EJB;
+ *
  * @author Felipe
  */
 @ManagedBean(name = "controleVideo")
@@ -24,9 +27,33 @@ public class ControleVideo implements Serializable {
     @EJB
     private VideoDAO dao;
     private Video objeto;
+    @EJB
+    private ComentarioDAO<Comentario> daoComentario;
+    private Boolean novoComentario;
+    private Comentario comentario;
 
     public ControleVideo() {
 
+    }
+
+    public void novoComentario() {
+        comentario = new Comentario();
+        novoComentario = true;
+    }
+
+    public void alterarComentario(int index) {
+        comentario = objeto.getComentarios().get(index);
+        novoComentario = false;
+    }
+
+    public void salvarComentario() {
+        objeto.adicionarComentario(comentario);
+        UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
+    }
+
+    public void removerComentario(int index) {
+        objeto.removerComentario(index);
+        UtilMensagem.mensagemInformacao("Comentário removido com sucesso!");
     }
 
     public String listar() {
@@ -82,5 +109,29 @@ public class ControleVideo implements Serializable {
 
     public void setObjeto(Video objeto) {
         this.objeto = objeto;
+    }
+
+    public ComentarioDAO<Comentario> getDaoComentario() {
+        return daoComentario;
+    }
+
+    public void setDaoComentario(ComentarioDAO<Comentario> daoComentario) {
+        this.daoComentario = daoComentario;
+    }
+
+    public Boolean getNovoComentario() {
+        return novoComentario;
+    }
+
+    public void setNovoComentario(Boolean novoComentario) {
+        this.novoComentario = novoComentario;
+    }
+
+    public Comentario getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(Comentario comentario) {
+        this.comentario = comentario;
     }
 }

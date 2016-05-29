@@ -51,7 +51,7 @@ public class ControleGaleria implements Serializable {
 
     public void removerFoto(int index) {
         objeto.removerFoto(index);
-        UtilMensagem.mensagemInformacao("Endereço removido com sucesso!");
+        UtilMensagem.mensagemInformacao("Foto removida com sucesso!");
     }
     
     public String listar() {
