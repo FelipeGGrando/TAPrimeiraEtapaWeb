@@ -9,14 +9,44 @@
         <ui:define name="titulo">Listagem de Pessoas</ui:define>
         <ui:define name="conteudo">
             <h:form id="formListagem" prependId="false">
-                <p:growl/>
+                <p:growl id="growl"/>
                 <p:commandButton actionListener="#{controlePessoa.novo()}"
                                  value="Nova Pessoa" icon="ui-icon-plus"
                                  oncomplete="PF('dlg').show();"
                                  update=":formEdicao"/>
-                <p:dataTable value="#{controlePessoa.dao.listaTodos}" var="obj">
+                <div align="center">
+                    <p:panelGrid columns="12">
+                        <p:outputLabel value="Ordem: "/>
+                        <p:selectOneMenu value="#{controlePessoa.dao.ordem}">
+                            <f:selectItem itemLabel="ID" itemValue="id"/>
+                            <f:selectItem itemLabel="Nome" itemValue="nome"/>
+                            <p:ajax update="listagem"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Filtro: "/>
+                        <p:inputText value="#{controlePessoa.dao.filtro}">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton value="Filtrar" update="listagem"/>
+                        <p:outputLabel value="Máximo de objetos"/>
+                        <p:inputText value="#{controlePessoa.dao.maximoObjetos}" size="5">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton action="#{controlePessoa.dao.primeiro}" value="Primeiro" 
+                                         update="listagem"/>
+                        <p:commandButton action="#{controlePessoa.dao.anterior()}" value="Anterior"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controlePessoa.dao.proximo()}" value="Próximo"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controlePessoa.dao.ultimo()}" value="Último"
+                                         update="listagem"/>
+                    </p:panelGrid>
+                </div>
+                <p:dataTable value="#{controlePessoa.dao.listaObjetos}" var="obj" id="listagem">
                     <f:facet name="header">
                         <p:outputLabel value="Listagem de Pessoas"/>
+                    </f:facet>
+                    <f:facet name="footer">
+                        <p:outputLabel value="#{controlePessoa.dao.mensagemNavegacao}"/>
                     </f:facet>
                     <p:column headerText="ID">
                         <p:outputLabel value="#{obj.id}"/>
@@ -66,63 +96,107 @@
         <ui:define name="dialogos">
             <p:dialog widgetVar="dlg" header="Edição" resizable="false" modal="true">
                 <h:form id="formEdicao" prependId="false">
-                    <p:growl/>
-                    <div align="center">
-                        <p:panelGrid columns="2">
-                            <f:facet name="footer">
-                                <div align="center">
-                                    <p:commandButton value="Salvar"
-                                                     icon="ui-icon-disk"
-                                                     update=":formEdicao :formListagem"
-                                                     actionListener="#{controlePessoa.salvar()}"
-                                                     oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
-                                </div>
-                            </f:facet>
-                            <p:outputLabel value="ID"/>
-                            <p:inputText value="#{controlePessoa.objeto.id}" readonly="true"
-                                         size="5"/>
-                            <p:outputLabel value="Login" for="txtLogin"/>
-                            <p:inputText value="#{controlePessoa.objeto.login}"
-                                         id="txtLogin" size="50" maxlength="255"/>
-                            <p:outputLabel value="Senha" for="txtSenha"/>
-                            <p:inputText value="#{controlePessoa.objeto.senha}"
-                                         id="txtSenha" size="50" maxlength="255"/>
-                            <p:outputLabel value="Ativo" for="selectAtivo"/>
-                            <p:selectOneMenu value="#{controlePessoa.objeto.ativo}" required="true" id="selectAtivo">
-                                <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
-                                <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
-                            </p:selectOneMenu>
-                            <p:outputLabel value="Último Login" for="txtUltLogin"/>
-                            <p:calendar value="#{controlePessoa.objeto.ultimoLogin}"
-                                        id="txtUltLogin"
-                                        mask="true" pattern="dd/MM/yyyy" navigator="true">
-                                <f:converter converterId="converterCalendar"/>
-                            </p:calendar>
-                            <p:outputLabel value="Nome" for="txtNome"/>
-                            <p:inputText value="#{controlePessoa.objeto.nome}"
-                                         size="50" maxlength="50" id="txtNome"/>
-                            <p:outputLabel value="Cidade" for="txtCidade"/>
-                            <p:inputText value="#{controlePessoa.objeto.cidade}" id="txtCidade"
-                                         size="50" maxlength="50"/>
-                            <p:outputLabel value="Nascimento" for="txtNascimento"/>
-                            <p:calendar value="#{controlePessoa.objeto.nascimento}"
-                                        id="txtNascimento"
-                                        mask="true" pattern="dd/MM/yyyy" navigator="true">
-                                <f:converter converterId="converterCalendar"/>
-                            </p:calendar>
-                            <p:outputLabel value="Descrição" for="edtDescricao"/>
-                            <p:editor id="edtDescricao" value="#{controlePessoa.objeto.descricao}" 
-                                      width="500" height="150"/>
-                            <p:outputLabel value="Altura" for="txtAltura"/>
-                            <p:inputText value="#{controlePessoa.objeto.altura}" id="txtAltura"
-                                         size="50" maxlength="50"/>
-                            <p:outputLabel value="Peso" for="txtPeso"/>
-                            <p:inputText value="#{controlePessoa.objeto.peso}" id="txtPeso"
-                                         size="50" maxlength="50"/>
-                        </p:panelGrid>
-                    </div>
+                    <p:growl id="growlEdicao"/>
+                    <p:tabView id="tab">
+                        <p:tab title="Dados Principais">
+                            <div align="center">
+                                <p:panelGrid columns="2">
+                                    <f:facet name="footer">
+                                        <div align="center">
+                                            <p:commandButton value="Salvar"
+                                                             icon="ui-icon-disk"
+                                                             update=":formEdicao :formListagem"
+                                                             actionListener="#{controlePessoa.salvar()}"
+                                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                        </div>
+                                    </f:facet>
+                                    <p:outputLabel value="ID"/>
+                                    <p:inputText value="#{controlePessoa.objeto.id}" readonly="true"
+                                                 size="5"/>
+                                    <p:outputLabel value="Login" for="txtLogin"/>
+                                    <p:inputText value="#{controlePessoa.objeto.login}"
+                                                 id="txtLogin" size="50" maxlength="255"/>
+                                    <p:outputLabel value="Senha" for="txtSenha"/>
+                                    <p:inputText value="#{controlePessoa.objeto.senha}"
+                                                 id="txtSenha" size="50" maxlength="255"/>
+                                    <p:outputLabel value="Ativo" for="selectAtivo"/>
+                                    <p:selectOneMenu value="#{controlePessoa.objeto.ativo}" required="true" id="selectAtivo">
+                                        <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
+                                        <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Último Login" for="txtUltLogin"/>
+                                    <p:calendar value="#{controlePessoa.objeto.ultimoLogin}"
+                                                id="txtUltLogin"
+                                                mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:calendar>
+                                    <p:outputLabel value="Nome" for="txtNome"/>
+                                    <p:inputText value="#{controlePessoa.objeto.nome}"
+                                                 size="50" maxlength="50" id="txtNome"/>
+                                    <p:outputLabel value="Cidade" for="txtCidade"/>
+                                    <p:inputText value="#{controlePessoa.objeto.cidade}" id="txtCidade"
+                                                 size="50" maxlength="50"/>
+                                    <p:outputLabel value="Nascimento" for="txtNascimento"/>
+                                    <p:calendar value="#{controlePessoa.objeto.nascimento}"
+                                                id="txtNascimento"
+                                                mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:calendar>
+                                    <p:outputLabel value="Descrição" for="edtDescricao"/>
+                                    <p:editor id="edtDescricao" value="#{controlePessoa.objeto.descricao}" 
+                                              width="500" height="150"/>
+                                    <p:outputLabel value="Altura" for="txtAltura"/>
+                                    <p:inputText value="#{controlePessoa.objeto.altura}" id="txtAltura"
+                                                 size="50" maxlength="50"/>
+                                    <p:outputLabel value="Peso" for="txtPeso"/>
+                                    <p:inputText value="#{controlePessoa.objeto.peso}" id="txtPeso"
+                                                 size="50" maxlength="50"/>
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Amigos">
+                            <p:dataTable value="#{controlePessoa.objeto.amigos}" var="amigo" rowIndexVar="idx" id="listaAmigos">
+                                <f:facet name="Header">
+                                    <p:commandButton value="Adicionar Amigo" actionListener="#{controlePessoa.novoAmigo()}"
+                                                     update=":formAmigo" icon="ui-icon-plus" id="btnNovoAmigo" process="btnNovoAmigo"
+                                                     oncomplete="PF('dlgAmigo').show();"/>
+                                </f:facet>
+                                <p:column headerText="ID">
+                                    <p:outputLabel value="#{amigo.id}"/>
+                                </p:column>
+                                <p:column headerText="Nome">
+                                    <p:outputLabel value="#{amigo.nome}"/>
+                                </p:column>
+                                 <p:column headerText="Cidade">
+                                    <p:outputLabel value="#{amigo.cidade}"/>
+                                </p:column>
+                                <p:column headerText="Ações">
+                                    <div align="center">
+                                        <p:commandButton id="btnAlterarAmigo" icon="ui-icon-pencil" 
+                                                         actionListener="#{controlePessoa.alterarAmigo(idx)}"
+                                                         update=":formAmigo" process="btnAlterarAmigo"
+                                                         oncomplete="PF('dlgAmigo').show();"/>
+                                        <p:commandButton id="btnRemoverAmigo" icon="ui-icon-trash"
+                                                         actionListener="#{controleVenda.removerItem(idx)}"
+                                                         update="listaAmigos :formListagem:growl"
+                                                         process="btnRemoverAmigo"
+                                                         onclick="if (!confirm('Confirma a exclusão do objeto?'))
+                                                                     return false"/>
+                                    </div>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
                 </h:form>
                 <ui:include src="/templates/ajaxstatus.xhtml"/>
+            </p:dialog>
+            <p:dialog header="Edição de Amigo" widgetVar="dlgAmigo" resizable="false" modal="true">
+                <h:form id="formAmigo">
+                    <p:growl/>
+                    <div align="center">
+                        
+                    </div>
+                </h:form>
             </p:dialog>
         </ui:define>          
     </ui:composition>
