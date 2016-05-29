@@ -18,7 +18,7 @@ public class DAOGenerico<T> implements Serializable {
 
     private List<T> listaObjetos;
     private List<T> listaTodos;
-    @PersistenceContext(unitName = "TA-2016-1-6M1-WEBSPU")
+    @PersistenceContext(unitName = "TAPrimeiraEtapaWebPU")
     private EntityManager em;
     private Class classePersistente;
     private String ordem = "id";

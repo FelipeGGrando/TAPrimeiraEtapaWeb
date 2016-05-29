@@ -5,7 +5,7 @@
  */
 package br.edu.ifsul.dao;
 
-import br.edu.ifsul.modelo.Video;
+import br.edu.ifsul.modelo.Postagem;
 import java.io.Serializable;
 import java.util.List;
 import javax.ejb.Stateful;
@@ -18,18 +18,18 @@ import javax.persistence.PersistenceContext;
  */
 
 @Stateful
-public class VideoDAO<T> extends DAOGenerico<Video> implements Serializable {
+public class PostagemDAO<T> extends DAOGenerico<Postagem> implements Serializable {
     @PersistenceContext(unitName = "TAPrimeiraEtapaWebPU")
     private EntityManager em;
-    private List<Video> listarTodos;
+    private List<Postagem> listarTodos;
 
-    public VideoDAO() {
+    public PostagemDAO() {
         super();
-        super.setClassePersistente(Video.class);
+        super.setClassePersistente(Postagem.class);
     }
     @Override
-    public Video getObjectById(Integer id) throws Exception {
-        Video obj = (Video) super.getEm().find(super.getClassePersistente(), id);
+    public Postagem getObjectById(Integer id) throws Exception {
+        Postagem obj = (Postagem) super.getEm().find(super.getClassePersistente(), id);
         //Inicializando a coleção de objetos para não ocorrer lazy exception
         obj.getComentarios().size();
         return obj;

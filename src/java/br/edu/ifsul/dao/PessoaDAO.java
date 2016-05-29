@@ -18,44 +18,21 @@ import javax.persistence.PersistenceContext;
  */
 
 @Stateful
-public class PessoaDAO implements Serializable {
+public class PessoaDAO<T> extends DAOGenerico<Pessoa> implements Serializable {
     @PersistenceContext(unitName = "TAPrimeiraEtapaWebPU")
     private EntityManager em;
     private List<Pessoa> listarTodos;
 
     public PessoaDAO() {
+        super();
+        super.setClassePersistente(Pessoa.class);
     }
-    
-    public void persist(Pessoa obj) throws Exception {
-        em.persist(obj);
-    }
-    
-    public void merge(Pessoa obj) throws Exception {
-        em.merge(obj);
-    }
-    
-    public void remove(Pessoa obj) throws Exception {
-        obj = em.merge(obj);
-        em.remove(obj);
-    }
-    
+    @Override
     public Pessoa getObjectById(Integer id) throws Exception {
-        return (Pessoa) em.find(Pessoa.class, id);
-    }
-    
-    public List<Pessoa> getListarTodos() {
-        return em.createQuery("from Pessoa").getResultList();
-    }    
-
-    public EntityManager getEm() {
-        return em;
+        Pessoa obj = (Pessoa) super.getEm().find(super.getClassePersistente(), id);
+        //Inicializando a coleção de objetos para não ocorrer lazy exception
+        obj.getAmigos().size();
+        return obj;
     }
 
-    public void setEm(EntityManager em) {
-        this.em = em;
-    }
-
-    public void setListarTodos(List<Pessoa> listarTodos) {
-        this.listarTodos = listarTodos;
-    }
 }

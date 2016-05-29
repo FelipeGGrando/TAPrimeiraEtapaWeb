@@ -23,6 +23,10 @@ public class ControlePessoa implements Serializable {
     @EJB
     private PessoaDAO dao;
     private Pessoa objeto;
+    @EJB
+    private PessoaDAO<Pessoa> daoPessoa;
+    private Pessoa amigo;
+    private Boolean novoAmigo;
 
     public ControlePessoa() {
 
@@ -67,6 +71,28 @@ public class ControlePessoa implements Serializable {
         }
     }
 
+    public void novoAmigo() {
+        amigo = new Pessoa();
+        novoAmigo = true;
+    }
+
+    public void alterarAmigo(int index) {
+        amigo = objeto.getAmigos().get(index);
+        novoAmigo = false;
+    }
+
+    public void salvarAmigo() {
+        if (novoAmigo) {
+            objeto.adicionarAmigo(amigo);
+        }
+        UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
+    }
+
+    public void removerAmigo(int index) {
+        objeto.removerAmigo(index);
+        UtilMensagem.mensagemInformacao("Amigo removido com sucesso!");
+    }
+
     public PessoaDAO getDao() {
         return dao;
     }
@@ -81,5 +107,29 @@ public class ControlePessoa implements Serializable {
 
     public void setObjeto(Pessoa objeto) {
         this.objeto = objeto;
+    }
+
+    public PessoaDAO<Pessoa> getDaoPessoa() {
+        return daoPessoa;
+    }
+
+    public void setDaoPessoa(PessoaDAO<Pessoa> daoPessoa) {
+        this.daoPessoa = daoPessoa;
+    }
+
+    public Pessoa getAmigo() {
+        return amigo;
+    }
+
+    public void setAmigo(Pessoa amigo) {
+        this.amigo = amigo;
+    }
+
+    public Boolean getNovoAmigo() {
+        return novoAmigo;
+    }
+
+    public void setNovoAmigo(Boolean novoAmigo) {
+        this.novoAmigo = novoAmigo;
     }
 }
