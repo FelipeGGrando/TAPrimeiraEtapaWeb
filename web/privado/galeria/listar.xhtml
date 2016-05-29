@@ -127,29 +127,28 @@
                                                      update=":formFoto" icon="ui-icon-plus" id="btnNovaFoto" process="btnNovaFoto"
                                                      oncomplete="PF('dlgFoto').show();"/>
                                 </f:facet>
-                                <p:outputLabel value="ID"/>
-                                <p:inputText value="#{foto.id}" readonly="true"
-                                             size="5"/>
-                                <p:outputLabel value="Titulo" for="txtTitulo"/>
-                                <p:inputText value="#{foto.titulo}"
-                                             id="txtTitulo" size="50" maxlength="50"/>
-                                <p:outputLabel value="Endereço" for="txtLink"/>
-                                <p:inputText value="#{foto.endereco}"
-                                             id="txtLink" size="100" maxlength="500"/>
-                                <p:outputLabel value="Pública" for="selectPublico"/>
-                                <p:selectOneMenu value="#{foto.publico}" required="true" id="selectPublico">
-                                    <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
-                                    <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
-                                </p:selectOneMenu>
-                                <p:outputLabel value="Publicação" for="txtPublicacao"/>
-                                <p:calendar  value="#{foto.publicacao}"
-                                             id="txtPublicacao"
-                                             mask="true" pattern="dd/MM/yyyy" navigator="true">
-                                    <f:converter converterId="converterCalendar"/>
-                                </p:calendar>
-                                <p:outputLabel value="Visuzaliações" for="txtVisualizacoes"/>
-                                <p:inputText value="#{foto.quantidadeVisualizacoes}"
-                                             id="txtVisualizacoes" size="100" maxlength="500"/>
+                                <p:column headerText="ID">
+                                    <p:outputLabel value="#{foto.id}"/>
+                                </p:column>
+                                <p:column headerText="Título">
+                                    <p:outputLabel value="#{foto.titulo}"/>
+                                </p:column>
+                                <p:column headerText="Link">
+                                    <p:outputLabel value="#{foto.endereco}"/>
+                                </p:column>
+                                <p:column headerText="Publicação">
+                                    <p:outputLabel value="#{foto.publicacao}">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Público">
+                                    <p:outputLabel value="#{foto.publico}">
+                                        <f:converter converterId="converterBoolean"/>
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Visualizações">
+                                    <p:outputLabel value="#{foto.quantidadeVisualizacoes}"/>
+                                </p:column>
                                 <p:column headerText="Ações">
                                     <div align="center">
                                         <p:commandButton id="btnAlterarFoto" icon="ui-icon-pencil" 
@@ -167,6 +166,46 @@
                             </p:dataTable>
                         </p:tab>
                     </p:tabView>
+                </h:form>
+                <ui:include src="/templates/ajaxstatus.xhtml"/>
+            </p:dialog>
+            <p:dialog header="Edição de Foto" widgetVar="dlgFoto" resizable="false"
+                      modal="true">
+                <h:form id="formFoto">
+                    <p:growl/>
+                    <div align="center">
+                        <p:panelGrid columns="2">
+                            <f:facet name="footer">
+                                <p:commandButton id="btnAdicionarFoto" value="Salvar" icon="ui-icon-plus"
+                                                 actionListener="#{controlePessoaFisica.salvarFoto()}"
+                                                 update=":formEdicao:tab:listaFotos :formFoto"
+                                                 process="@form" oncomplete="if(!args.validationFailed) {PF('dlgFoto').hide();}"/>
+                            </f:facet>
+                            <p:outputLabel value="ID"/>
+                            <p:inputText value="#{foto.id}" readonly="true"
+                                         size="5"/>
+                            <p:outputLabel value="Titulo" for="txtTitulo"/>
+                            <p:inputText value="#{foto.titulo}"
+                                         id="txtTitulo" size="50" maxlength="50"/>
+                            <p:outputLabel value="Endereço" for="txtLink"/>
+                            <p:inputText value="#{foto.endereco}"
+                                         id="txtLink" size="100" maxlength="500"/>
+                            <p:outputLabel value="Pública" for="selectPublico"/>
+                            <p:selectOneMenu value="#{foto.publico}" required="true" id="selectPublico">
+                                <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
+                                <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Publicação" for="txtPublicacao"/>
+                            <p:calendar  value="#{foto.publicacao}"
+                                         id="txtPublicacao"
+                                         mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                <f:converter converterId="converterCalendar"/>
+                            </p:calendar>
+                            <p:outputLabel value="Visuzaliações" for="txtVisualizacoes"/>
+                            <p:inputText value="#{foto.quantidadeVisualizacoes}"
+                                         id="txtVisualizacoes" size="100" maxlength="500"/>
+                        </p:panelGrid>
+                    </div>
                 </h:form>
                 <ui:include src="/templates/ajaxstatus.xhtml"/>
             </p:dialog>
