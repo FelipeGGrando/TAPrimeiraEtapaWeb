@@ -8,7 +8,7 @@
     <ui:composition template="/templates/template.xhtml">
         <ui:define name="titulo">Listagem de Vídeos</ui:define>
         <ui:define name="conteudo">
-            <h:form id="formListagem" prependId="false">
+            <h:form id="listagem" prependId="false">
                 <p:growl id="growl"/>
                 <p:commandButton actionListener="#{controleVideo.novo()}"
                                  value="Novo Vídeo" icon="ui-icon-plus"
@@ -100,7 +100,7 @@
                                         <div align="center">
                                             <p:commandButton value="Salvar"
                                                              icon="ui-icon-disk"
-                                                             update=":formEdicao :formListagem"
+                                                             update=":formEdicao :listagem"
                                                              actionListener="#{controleVideo.salvar()}"
                                                              oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
                                         </div>
@@ -162,7 +162,7 @@
                                                          oncomplete="PF('dlgComentario').show();"/>
                                         <p:commandButton id="btnRemoverComentario" icon="ui-icon-trash"
                                                          actionListener="#{controleVideo.removerComentario(idx)}"
-                                                         update="listaComentarios :formListagem:growl"
+                                                         update="listaComentarios :listagem:growl"
                                                          process="btnRemoverComentario"
                                                          onclick="if (!confirm('Confirma a exclusão do objeto?'))
                                                                      return false"/>
@@ -190,11 +190,11 @@
                                       width="500" height="150"/>
                             <p:outputLabel value="Pessoa" for="selectPessoa"/>
                             <p:selectOneMenu value="#{controleVideo.comentario.pessoa}"
-                                             id="selectAmigo">
-                                <f:converter converterId="converterPessoa"/>
+                                             id="selectPessoa">
                                 <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
                                 <f:selectItems value="#{controlePessoa.dao.listaTodos}"
                                                var="p" itemLabel="#{p.nome}"/>
+                                <f:converter converterId="converterPessoa"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="Publicação" for="txtPublicacao"/>
                             <p:calendar value="#{controleVideo.comentario.publicacao}"
