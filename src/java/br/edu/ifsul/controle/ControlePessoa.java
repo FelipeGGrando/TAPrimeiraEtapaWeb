@@ -82,8 +82,18 @@ public class ControlePessoa implements Serializable {
     }
 
     public void salvarAmigo() {
+         try {
+            if (amigo.getId() == null) {
+                dao.persist(amigo);
+            } else {
+                dao.merge(amigo);
+            }
+        } catch (Exception e) {
+            UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());
+        }
         if (novoAmigo) {
             objeto.adicionarAmigo(amigo);
+            amigo.adicionarAmigo(objeto);
         }
         UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
     }

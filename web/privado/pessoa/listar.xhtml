@@ -201,18 +201,53 @@
                                                  update=":formEdicao:tab:listaAmigos :formAmigo"
                                                  process="@form" oncomplete="if(!args.validationFailed) {PF('dlgAmigo').hide();}"/>
                             </f:facet>
-                            <p:outputLabel value="Amigo" for="selectAmigo"/>
-                            <p:selectOneMenu value="#{controlePessoa.objeto.amigos}"
-                                             id="selectAmigo">
-                                <f:converter converterId="converterPessoa"/>
-                                <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
-                                <f:selectItems value="#{controlePessoa.dao.listaTodos}"
-                                               var="a" itemLabel="#{a.nome}"/>
-                            </p:selectOneMenu>
+                            <p:outputLabel value="ID"/>
+                                    <p:inputText value="#{controlePessoa.amigo.id}" readonly="true"
+                                                 size="5"/>
+                                    <p:outputLabel value="Login" for="txtLogin"/>
+                                    <p:inputText value="#{controlePessoa.amigo.login}"
+                                                 id="txtLogin" size="50" maxlength="255"/>
+                                    <p:outputLabel value="Senha" for="txtSenha"/>
+                                    <p:inputText value="#{controlePessoa.amigo.senha}"
+                                                 id="txtSenha" size="50" maxlength="255"/>
+                                    <p:outputLabel value="Ativo" for="selectAtivo"/>
+                                    <p:selectOneMenu value="#{controlePessoa.amigo.ativo}" required="true" id="selectAtivo">
+                                        <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
+                                        <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Último Login" for="txtUltLogin"/>
+                                    <p:calendar value="#{controlePessoa.amigo.ultimoLogin}"
+                                                id="txtUltLogin"
+                                                mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:calendar>
+                                    <p:outputLabel value="Nome" for="txtNome"/>
+                                    <p:inputText value="#{controlePessoa.amigo.nome}"
+                                                 size="50" maxlength="50" id="txtNome"/>
+                                    <p:outputLabel value="Cidade" for="txtCidade"/>
+                                    <p:inputText value="#{controlePessoa.amigo.cidade}" id="txtCidade"
+                                                 size="50" maxlength="50"/>
+                                    <p:outputLabel value="Nascimento" for="txtNascimento"/>
+                                    <p:calendar value="#{controlePessoa.amigo.nascimento}"
+                                                id="txtNascimento"
+                                                mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:calendar>
+                                    <p:outputLabel value="Descrição" for="edtDescricao"/>
+                                    <p:editor id="edtDescricao" value="#{controlePessoa.amigo.descricao}" 
+                                              width="500" height="150"/>
+                                    <p:outputLabel value="Altura" for="txtAltura"/>
+                                    <p:inputText value="#{controlePessoa.amigo.altura}" id="txtAltura"
+                                                 size="50" maxlength="50"/>
+                                    <p:outputLabel value="Peso" for="txtPeso"/>
+                                    <p:inputText value="#{controlePessoa.amigo.peso}" id="txtPeso"
+                                                 size="50" maxlength="50"/>
+                            
                         </p:panelGrid>
                     </div>
                 </h:form>
             </p:dialog>
+            
         </ui:define>          
     </ui:composition>
 </html>
