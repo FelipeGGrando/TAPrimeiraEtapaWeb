@@ -85,7 +85,9 @@ public class ControlePessoa implements Serializable {
          try {
             if (amigo.getId() == null) {
                 dao.persist(amigo);
+                dao.persist(objeto);
             } else {
+                dao.persist(objeto);
                 dao.merge(amigo);
             }
         } catch (Exception e) {

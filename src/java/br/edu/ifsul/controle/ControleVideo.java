@@ -25,7 +25,7 @@ import javax.faces.bean.SessionScoped;
 public class ControleVideo implements Serializable {
 
     @EJB
-    private VideoDAO dao;
+    private VideoDAO<Video> dao;
     private Video objeto;
     @EJB
     private ComentarioDAO<Comentario> daoComentario;
@@ -35,7 +35,7 @@ public class ControleVideo implements Serializable {
     public ControleVideo() {
 
     }
-
+    
     public void novoComentario() {
         comentario = new Comentario();
         novoComentario = true;
@@ -47,6 +47,7 @@ public class ControleVideo implements Serializable {
     }
 
     public void salvarComentario() {
+        comentario.setVideo(objeto);
         objeto.adicionarComentario(comentario);
         UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
     }
