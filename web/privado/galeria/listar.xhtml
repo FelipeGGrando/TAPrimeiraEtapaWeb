@@ -15,7 +15,7 @@
                                  oncomplete="PF('dlg').show();"
                                  update=":formEdicao"/>
                 <div align="center">
-                    <p:panelGrid columns="12">
+                    <p:panelGrid columns="11">
                         <p:outputLabel value="Ordem: "/>
                         <p:selectOneMenu value="#{controleGaleria.dao.ordem}">
                             <f:selectItem itemLabel="Titulo" itemValue="titulo"/>
@@ -41,7 +41,7 @@
                                          update="listagem"/>
                     </p:panelGrid>
                 </div>
-                <p:dataTable value="#{controleGaleria.dao.listaTodos}" var="obj" id="listagem">
+                <p:dataTable value="#{controleGaleria.dao.listaObjetos}" var="obj" id="listagem">
                     <f:facet name="header">
                         <p:outputLabel value="Listagem de Galerias"/>
                     </f:facet>
@@ -123,12 +123,12 @@
                         <p:tab title="Fotos">
                             <p:dataTable value="#{controleGaleria.objeto.fotos}" var="foto" rowIndexVar="idx" id="listaFotos">
                                 <f:facet name="header">
-                                    <p:commandButton value="Nova Foto" actionListener="#{controleGaleria.novaFoto()}"
+                                    <p:commandButton value="Nova Foto" actionListener="#{controleGaleria.novaFoto}"
                                                      update=":formFoto" icon="ui-icon-plus" id="btnNovaFoto" process="btnNovaFoto"
                                                      oncomplete="PF('dlgFoto').show();"/>
                                 </f:facet>
                                 <p:column headerText="ID">
-                                    <p:outputLabel value="#{foto.id}"/>
+                                    <p:outputLabel value="#{foto.fotoId.numero}"/>
                                 </p:column>
                                 <p:column headerText="Título">
                                     <p:outputLabel value="#{foto.titulo}"/>
@@ -177,12 +177,12 @@
                         <p:panelGrid columns="2">
                             <f:facet name="footer">
                                 <p:commandButton id="btnAdicionarFoto" value="Salvar" icon="ui-icon-plus"
-                                                 actionListener="#{controlePessoaFisica.salvarFoto()}"
+                                                 actionListener="#{controleGaleria.salvarFoto()}"
                                                  update=":formEdicao:tab:listaFotos :formFoto"
                                                  process="@form" oncomplete="if(!args.validationFailed) {PF('dlgFoto').hide();}"/>
                             </f:facet>
                             <p:outputLabel value="ID"/>
-                            <p:inputText value="#{controleGaleria.foto.fotoId}" readonly="true"
+                            <p:inputText value="#{controleGaleria.foto.fotoId.numero}" readonly="true"
                                          size="5"/>
                             <p:outputLabel value="Titulo" for="txtTitulo"/>
                             <p:inputText value="#{controleGaleria.foto.titulo}"

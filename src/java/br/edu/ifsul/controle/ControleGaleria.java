@@ -45,7 +45,21 @@ public class ControleGaleria implements Serializable {
     }
 
     public void salvarFoto() {
-        objeto.adicionarFoto(foto);
+        try {
+            if (foto.getFotoId().getNumero() == null) {
+                dao.persist(objeto);
+                dao.persist(foto);
+            } else {
+                dao.persist(objeto);
+                dao.merge(foto);
+            }
+        } catch (Exception e) {
+            UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());
+        }
+        if (novaFoto) {
+            objeto.adicionarFoto(foto);
+            foto.adicionarGaleria(objeto);
+        }
         UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
     }
 
