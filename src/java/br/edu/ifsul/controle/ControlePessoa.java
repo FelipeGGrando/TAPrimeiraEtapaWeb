@@ -21,7 +21,7 @@ import javax.faces.bean.SessionScoped;
 public class ControlePessoa implements Serializable {
 
     @EJB
-    private PessoaDAO dao;
+    private PessoaDAO<Pessoa> dao;
     private Pessoa objeto;
     @EJB
     private PessoaDAO<Pessoa> daoPessoa;
@@ -87,8 +87,8 @@ public class ControlePessoa implements Serializable {
                 dao.persist(amigo);
                 dao.persist(objeto);
             } else {
-                dao.persist(objeto);
                 dao.merge(amigo);
+                dao.merge(objeto);
             }
         } catch (Exception e) {
             UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());

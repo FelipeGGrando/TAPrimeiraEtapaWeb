@@ -6,8 +6,10 @@
 package br.edu.ifsul.controle;
 
 import br.edu.ifsul.dao.FotoDAO;
+import br.edu.ifsul.dao.FotoIDDAO;
 import br.edu.ifsul.dao.GaleriaDAO;
 import br.edu.ifsul.modelo.Foto;
+import br.edu.ifsul.modelo.FotoID;
 import br.edu.ifsul.modelo.Galeria;
 import java.io.Serializable;
 import javax.ejb.EJB;
@@ -23,18 +25,20 @@ import javax.faces.bean.SessionScoped;
 public class ControleGaleria implements Serializable {
 
     @EJB
-    private GaleriaDAO dao;
+    private GaleriaDAO<Galeria> dao;
     private Galeria objeto;
     @EJB
     private FotoDAO<Foto> daoFoto;
     private Boolean novaFoto;
     private Foto foto;
-
+    @EJB
+    private FotoIDDAO<FotoID> daoFotoId;
+    
     public ControleGaleria() {
 
     }
-    
-        public void novaFoto() {
+
+    public void novaFoto() {
         foto = new Foto();
         novaFoto = true;
     }
@@ -47,11 +51,16 @@ public class ControleGaleria implements Serializable {
     public void salvarFoto() {
         try {
             if (foto.getFotoId().getNumero() == null) {
+                FotoID fotoId = new FotoID();
+                fotoId.setGaleria(objeto);
+                fotoId.setNumero(objeto.getFotos().size()+1);
+                daoFotoId.persist(fotoId);
+                foto.setFotoId(fotoId);
+                daoFoto.persist(foto);
                 dao.persist(objeto);
-                dao.persist(foto);
             } else {
-                dao.persist(objeto);
-                dao.merge(foto);
+                daoFoto.merge(foto);
+                dao.merge(objeto);
             }
         } catch (Exception e) {
             UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());
@@ -67,7 +76,7 @@ public class ControleGaleria implements Serializable {
         objeto.removerFoto(index);
         UtilMensagem.mensagemInformacao("Foto removida com sucesso!");
     }
-    
+
     public String listar() {
         return "/privado/galeria/listar?faces-redirect=true";
     }
@@ -145,5 +154,13 @@ public class ControleGaleria implements Serializable {
 
     public void setFoto(Foto foto) {
         this.foto = foto;
+    }
+
+    public FotoIDDAO<FotoID> getDaoFotoId() {
+        return daoFotoId;
+    }
+
+    public void setDaoFotoId(FotoIDDAO<FotoID> daoFotoId) {
+        this.daoFotoId = daoFotoId;
     }
 }
