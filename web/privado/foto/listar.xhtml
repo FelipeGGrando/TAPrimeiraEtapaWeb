@@ -6,19 +6,19 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
     <ui:composition template="/templates/template.xhtml">
-        <ui:define name="titulo">Listagem de Vídeos</ui:define>
+        <ui:define name="titulo">Listagem de Fotos</ui:define>
         <ui:define name="conteudo">
             <h:form id="formListagem" prependId="false">
                 <p:growl id="growl"/>
                 <p:commandButton actionListener="#{controleFoto.novo()}"
-                                 value="Novo Vídeo" icon="ui-icon-plus"
+                                 value="Nova Foto" icon="ui-icon-plus"
                                  oncomplete="PF('dlg').show();"
                                  update=":formEdicao"/>
                 <div align="center">
                     <p:panelGrid columns="11">
                         <p:outputLabel value="Ordem: "/>
                         <p:selectOneMenu value="#{controleFoto.dao.ordem}">
-                            <f:selectItem itemLabel="ID" itemValue="id"/>
+                            <f:selectItem itemLabel="ID" itemValue="fotoId.numero"/>
                             <f:selectItem itemLabel="Título" itemValue="titulo"/>
                             <p:ajax update="listagem"/>
                         </p:selectOneMenu>
@@ -49,7 +49,10 @@
                         <p:outputLabel value="#{controleFoto.dao.mensagemNavegacao}"/>
                     </f:facet>
                     <p:column headerText="ID">
-                        <p:outputLabel value="#{obj.id}"/>
+                        <p:outputLabel value="#{obj.fotoId.numero}"/>
+                    </p:column>
+                    <p:column headerText="Galeria">
+                        <p:outputLabel value="#{obj.fotoId.galeria}"/>
                     </p:column>
                     <p:column headerText="Título">
                         <p:outputLabel value="#{obj.titulo}"/>
@@ -117,7 +120,7 @@
                                                  id="txtTitulo" size="50" maxlength="50"/>
                                     <p:outputLabel value="Endereço" for="txtEndereco"/>
                                     <p:inputText value="#{controleFoto.objeto.endereco}"
-                                                 id="txtLink" size="100" maxlength="500"/>
+                                                 id="txtEndereco" size="100" maxlength="500"/>
                                     <p:outputLabel value="Público" for="selectPublico"/>
                                     <p:selectOneMenu value="#{controleFoto.objeto.publico}" required="true" id="selectPublico">
                                         <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>

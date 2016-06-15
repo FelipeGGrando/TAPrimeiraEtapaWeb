@@ -57,7 +57,7 @@ public class ControleFoto implements Serializable {
     }
 
     public String listar() {
-        return "/privado/video/listar?faces-redirect=true";
+        return "/privado/foto/listar?faces-redirect=true";
     }
 
     public void novo() {
