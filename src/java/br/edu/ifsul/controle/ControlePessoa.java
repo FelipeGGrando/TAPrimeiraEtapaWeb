@@ -82,22 +82,16 @@ public class ControlePessoa implements Serializable {
     }
 
     public void salvarAmigo() {
-         try {
-            if (amigo.getId() == null) {
-                dao.persist(amigo);
-                dao.persist(objeto);
-            } else {
-                dao.merge(amigo);
-                dao.merge(objeto);
+        try {
+            if (novoAmigo) {
+                amigo.adicionarAmigo(objeto);
+                daoPessoa.persist(amigo);
+                objeto.adicionarAmigo(amigo);
             }
+            UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
         } catch (Exception e) {
             UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());
         }
-        if (novoAmigo) {
-            objeto.adicionarAmigo(amigo);
-            amigo.adicionarAmigo(objeto);
-        }
-        UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
     }
 
     public void removerAmigo(int index) {
@@ -105,11 +99,11 @@ public class ControlePessoa implements Serializable {
         UtilMensagem.mensagemInformacao("Amigo removido com sucesso!");
     }
 
-    public PessoaDAO getDao() {
+    public PessoaDAO<Pessoa> getDao() {
         return dao;
     }
 
-    public void setDao(PessoaDAO dao) {
+    public void setDao(PessoaDAO<Pessoa> dao) {
         this.dao = dao;
     }
 
@@ -144,4 +138,5 @@ public class ControlePessoa implements Serializable {
     public void setNovoAmigo(Boolean novoAmigo) {
         this.novoAmigo = novoAmigo;
     }
+
 }

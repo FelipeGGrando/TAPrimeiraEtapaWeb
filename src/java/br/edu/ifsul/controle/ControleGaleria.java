@@ -12,6 +12,8 @@ import br.edu.ifsul.modelo.Foto;
 import br.edu.ifsul.modelo.FotoID;
 import br.edu.ifsul.modelo.Galeria;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -33,6 +35,7 @@ public class ControleGaleria implements Serializable {
     private Foto foto;
     @EJB
     private FotoIDDAO<FotoID> daoFotoId;
+    private FotoID fotoId;
     
     public ControleGaleria() {
 
@@ -50,26 +53,22 @@ public class ControleGaleria implements Serializable {
 
     public void salvarFoto() {
         try {
-            if (foto.getFotoId().getNumero() == null) {
-                FotoID fotoId = new FotoID();
+            if (novaFoto) {
+                List<Galeria> galerias = new ArrayList<>();
+                galerias.add(objeto);
+                fotoId = new FotoID();
                 fotoId.setGaleria(objeto);
                 fotoId.setNumero(objeto.getFotos().size()+1);
                 daoFotoId.persist(fotoId);
                 foto.setFotoId(fotoId);
+                foto.setGalerias(galerias);
                 daoFoto.persist(foto);
-                dao.persist(objeto);
-            } else {
-                daoFoto.merge(foto);
-                dao.merge(objeto);
+                objeto.adicionarFoto(foto);
             }
+            UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
         } catch (Exception e) {
             UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());
         }
-        if (novaFoto) {
-            objeto.adicionarFoto(foto);
-            foto.adicionarGaleria(objeto);
-        }
-        UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
     }
 
     public void removerFoto(int index) {
@@ -162,5 +161,13 @@ public class ControleGaleria implements Serializable {
 
     public void setDaoFotoId(FotoIDDAO<FotoID> daoFotoId) {
         this.daoFotoId = daoFotoId;
+    }
+
+    public FotoID getFotoId() {
+        return fotoId;
+    }
+
+    public void setFotoId(FotoID fotoId) {
+        this.fotoId = fotoId;
     }
 }

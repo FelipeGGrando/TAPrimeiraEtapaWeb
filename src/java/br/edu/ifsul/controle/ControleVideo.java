@@ -35,7 +35,7 @@ public class ControleVideo implements Serializable {
     public ControleVideo() {
 
     }
-    
+
     public void novoComentario() {
         comentario = new Comentario();
         novoComentario = true;
@@ -47,9 +47,15 @@ public class ControleVideo implements Serializable {
     }
 
     public void salvarComentario() {
-        comentario.setVideo(objeto);
-        objeto.adicionarComentario(comentario);
-        UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
+        try {
+            if (novoComentario) {
+                comentario.setVideo(objeto);
+                objeto.adicionarComentario(comentario);
+            }
+            UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
+        } catch (Exception e) {
+            UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());
+        }
     }
 
     public void removerComentario(int index) {
