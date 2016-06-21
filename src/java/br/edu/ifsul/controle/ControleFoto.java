@@ -9,6 +9,7 @@ import br.edu.ifsul.dao.ComentarioDAO;
 import br.edu.ifsul.dao.FotoDAO;
 import br.edu.ifsul.modelo.Comentario;
 import br.edu.ifsul.modelo.Foto;
+import br.edu.ifsul.modelo.FotoID;
 import java.io.Serializable;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -77,7 +78,7 @@ public class ControleFoto implements Serializable {
         }
     }
 
-    public void editar(Integer id) {
+    public void editar(FotoID id) {
         try {
             objeto = dao.getObjectById(id);
         } catch (Exception e) {
@@ -85,7 +86,7 @@ public class ControleFoto implements Serializable {
         }
     }
 
-    public void remover(Integer id) {
+    public void remover(FotoID id) {
         try {
             objeto = dao.getObjectById(id);
             dao.remove(objeto);

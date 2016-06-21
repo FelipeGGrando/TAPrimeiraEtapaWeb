@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/templates/template.xhtml">
+        <ui:define name="titulo">Listagem de Postagens</ui:define>
+        <ui:define name="conteudo">
+            <h:form id="formListagem" prependId="false">
+                <p:growl id="growl"/>
+                <p:commandButton actionListener="#{controlePostagem.novo()}"
+                                 value="Nova Postagem" icon="ui-icon-plus"
+                                 oncomplete="PF('dlg').show();"
+                                 update=":formEdicao"/>
+                <div align="center">
+                    <p:panelGrid columns="11">
+                        <p:outputLabel value="Ordem: "/>
+                        <p:selectOneMenu value="#{controlePostagem.dao.ordem}">
+                            <f:selectItem itemLabel="ID" itemValue="id"/>
+                            <f:selectItem itemLabel="Título" itemValue="titulo"/>
+                            <f:selectItem itemLabel="Pessoa" itemValue="pessoa.nome"/>
+                            <p:ajax update="listagem"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Filtro: "/>
+                        <p:inputText value="#{controlePostagem.dao.filtro}">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton value="Filtrar" update="listagem"/>
+                        <p:outputLabel value="Máximo de objetos"/>
+                        <p:inputText value="#{controlePostagem.dao.maximoObjetos}" size="5">
+                            <p:ajax event="keyup" update="listagem"/>
+                        </p:inputText>
+                        <p:commandButton action="#{controlePostagem.dao.primeiro}" value="Primeiro" 
+                                         update="listagem"/>
+                        <p:commandButton action="#{controlePostagem.dao.anterior()}" value="Anterior"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controlePostagem.dao.proximo()}" value="Próximo"
+                                         update="listagem"/>
+                        <p:commandButton action="#{controlePostagem.dao.ultimo()}" value="Último"
+                                         update="listagem"/>
+                    </p:panelGrid>
+                </div>
+                <p:dataTable value="#{controlePostagem.dao.listaObjetos}" var="obj" id="listagem">
+                    <f:facet name="header">
+                        <p:outputLabel value="Listagem de Postagens"/>
+                    </f:facet>
+                    <f:facet name="footer">
+                        <p:outputLabel value="#{controlePostagem.dao.mensagemNavegacao}"/>
+                    </f:facet>
+                    <p:column headerText="ID">
+                        <p:outputLabel value="#{obj.id}"/>
+                    </p:column>
+                    <p:column headerText="Título">
+                        <p:outputLabel value="#{obj.titulo}"/>
+                    </p:column>
+                    <p:column headerText="Pessoa">
+                        <p:outputLabel value="#{obj.pessoa.nome}"/>
+                    </p:column>
+                    <p:column headerText="Publicação">
+                        <p:outputLabel value="#{obj.publicacao}">
+                            <f:converter converterId="converterCalendar"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Público">
+                        <p:outputLabel value="#{obj.publico}">
+                            <f:converter converterId="converterBoolean"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Ações">
+                        <div align="center">
+                            <p:commandButton
+                                actionListener="#{controlePostagem.editar(obj.id)}"
+                                icon="ui-icon-pencil"
+                                update=":formEdicao"
+                                process="@form"
+                                oncomplete="PF('dlg').show();"
+                                id="btnAlterar"/>
+                            <p:commandButton
+                                actionListener="#{controlePostagem.remover(obj.id)}"
+                                icon="ui-icon-trash"
+                                update="@form"
+                                process="@form"
+                                id="btnExcluir"
+                                onclick="if (!confirm('Confirma a exclusão do objeto'))
+                                            return false"/>
+                        </div>
+                    </p:column>                    
+                </p:dataTable>
+            </h:form>
+        </ui:define>
+        <ui:define name="dialogos">
+            <p:dialog widgetVar="dlg" header="Edição" resizable="false" modal="true">
+                <h:form id="formEdicao" prependId="false">
+                    <p:growl/>
+                    <p:tabView id="tab">
+                        <p:tab title="Dados Principais">
+                            <div align="center">
+                                <p:panelGrid columns="2">
+                                    <f:facet name="footer">
+                                        <div align="center">
+                                            <p:commandButton value="Salvar"
+                                                             icon="ui-icon-disk"
+                                                             update=":formEdicao :formListagem"
+                                                             actionListener="#{controlePostagem.salvar()}"
+                                                             oncomplete="if(!args.validationFailed){PF('dlg').hide();}"/>
+                                        </div>
+                                    </f:facet>
+                                    <p:outputLabel value="ID"/>
+                                    <p:inputText value="#{controlePostagem.objeto.id}" readonly="true"
+                                                 size="5"/>
+                                    <p:outputLabel value="Pessoa" for="selectPessoa"/>
+                                    <p:selectOneMenu value="#{controlePostagem.objeto.pessoa}"
+                                                     id="selectPessoa">
+                                        <f:converter converterId="converterPessoa"/>
+                                        <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
+                                        <f:selectItems value="#{controlePessoa.dao.listaTodos}"
+                                                       var="p" itemLabel="#{p.nome}"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Titulo" for="txtTitulo"/>
+                                    <p:inputText value="#{controlePostagem.objeto.titulo}"
+                                                 id="txtTitulo" size="50" maxlength="50"/>
+                                    <p:outputLabel value="Conteúdo" for="edtConteudo"/>
+                                    <p:editor id="edtConteudo" value="#{controlePostagem.objeto.conteudo}" 
+                                              width="500" height="150"/>
+                                    <p:outputLabel value="Vídeo" for="selectVideo"/>
+                                    <p:selectOneMenu value="#{controlePostagem.objeto.video}"
+                                                     id="selectVideo">
+                                        <f:converter converterId="converterVideo"/>
+                                        <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
+                                        <f:selectItems value="#{controleVideo.dao.listaTodos}"
+                                                       var="v" itemLabel="#{v.titulo}"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Publicação" for="txtPublicacao"/>
+                                    <p:calendar  value="#{controlePostagem.objeto.publicacao}"
+                                                 id="txtPublicacao"
+                                                 mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:calendar>
+                                    <p:outputLabel value="Público" for="selectPublico"/>
+                                    <p:selectOneMenu value="#{controlePostagem.objeto.publico}" required="true" id="selectPublico">
+                                        <f:selectItem  itemValue="TRUE"  itemLabel="Sim"/>
+                                        <f:selectItem  itemValue="FALSE" itemLabel="Não"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Visualizações" for="txtVisualizacoes"/>
+                                    <p:inputText value="#{controlePostagem.objeto.quantidadeVisualizacoes}"
+                                                 id="txtVisualizacoes" size="100" maxlength="500"/>
+                                </p:panelGrid>
+                            </div>
+                        </p:tab>
+                        <p:tab title="Comentários">
+                            <p:dataTable value="#{controlePostagem.objeto.comentarios}" 
+                                         var="comentario" rowIndexVar="idx" id="listaComentarios">
+                                <f:facet name="header">
+                                    <p:commandButton value="Novo Comentário" actionListener="#{controlePostagem.novoComentario}"
+                                                     update=":formComentario" icon="ui-icon-plus" id="btnNovoComentario" process="btnNovoComentario"
+                                                     oncomplete="PF('dlgComentario').show();"/>
+                                </f:facet>
+                                <p:column headerText="ID">
+                                    <p:outputLabel value="#{comentario.id}"/>
+                                </p:column>
+                                <p:column headerText="Conteúdo">
+                                    <p:outputLabel value="#{comentario.conteudo}"/>
+                                </p:column>
+                                <p:column headerText="Pessoa">
+                                    <p:outputLabel value="#{comentario.pessoa.nome}"/>
+                                </p:column>
+                                <p:column headerText="Publicação">
+                                    <p:outputLabel value="#{comentario.publicacao}">
+                                        <f:converter converterId="converterCalendar"/>
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Ações">
+                                    <div align="center">
+                                        <p:commandButton id="btnAlterarComentario" icon="ui-icon-pencil" 
+                                                         actionListener="#{controlePostagem.alterarComentario(idx)}"
+                                                         update=":formComentario" process="btnAlterarComentario"
+                                                         oncomplete="PF('dlgComentario').show();"/>
+                                        <p:commandButton id="btnRemoverComentario" icon="ui-icon-trash"
+                                                         actionListener="#{controlePostagem.removerComentario(idx)}"
+                                                         update="listaComentarios :formListagem:growl"
+                                                         process="btnRemoverComentario"
+                                                         onclick="if (!confirm('Confirma a exclusão do objeto?'))
+                                                                     return false"/>
+                                    </div>
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                </h:form>
+                <ui:include src="/templates/ajaxstatus.xhtml"/>
+            </p:dialog>
+            <p:dialog header="Edição de Comentário" widgetVar="dlgComentario" resizable="false" modal="true">
+                <h:form id="formComentario">
+                    <p:growl/>
+                    <div align="center">
+                        <p:panelGrid columns="2">
+                            <f:facet name="footer">
+                                <p:commandButton id="btnAdicionarComentario" value="Salvar" icon="ui-icon-disk"
+                                                 actionListener="#{controlePostagem.salvarComentario()}"
+                                                 update=":formEdicao:tab:listaComentarios :formComentario"
+                                                 process="@form" oncomplete="if(!args.validationFailed) {PF('dlgComentario').hide();}"/>
+                            </f:facet>
+                            <p:outputLabel value="ID"/>
+                            <p:inputText value="#{controlePostagem.comentario.id}" readonly="true" size="10"/>
+                            <p:outputLabel value="Conteúdo" for="edtConteudo"/>
+                            <p:editor id="edtConteudo" value="#{controlePostagem.comentario.conteudo}" 
+                                      width="500" height="150"/>
+                            <p:outputLabel value="Pessoa" for="selectPessoa"/>
+                            <p:selectOneMenu value="#{controlePostagem.comentario.pessoa}"
+                                             id="selectPessoa">
+                                <f:selectItem itemLabel="Selecione um registro" noSelectionOption="true"/>
+                                <f:selectItems value="#{controlePessoa.dao.listaTodos}"
+                                               var="p" itemLabel="#{p.nome}"/>
+                                <f:converter converterId="converterPessoa"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Publicação" for="txtPublicacao"/>
+                            <p:calendar value="#{controlePostagem.comentario.publicacao}"
+                                        id="txtPublicacao"
+                                        mask="true" pattern="dd/MM/yyyy" navigator="true">
+                                <f:converter converterId="converterCalendar"/>
+                            </p:calendar>
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+            </p:dialog>
+        </ui:define>          
+    </ui:composition>
+</html>

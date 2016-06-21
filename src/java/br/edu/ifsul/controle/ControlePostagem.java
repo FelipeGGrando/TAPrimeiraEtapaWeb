@@ -42,7 +42,7 @@ public class ControlePostagem implements Serializable {
     }
     
     public String listar(){
-        return "/privado/endereco/listar?faces-redirect=true";
+        return "/privado/postagem/listar?faces-redirect=true";
     }
     
     public void novo(){
@@ -59,9 +59,16 @@ public class ControlePostagem implements Serializable {
         novoComentario = false;
     }
 
-    public void salvarComentario() {
-        objeto.adicionarComentario(comentario);
-        UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
+ public void salvarComentario() {
+        try {
+            if (novoComentario) {
+                comentario.setPostagem(objeto);
+                objeto.adicionarComentario(comentario);
+            }
+            UtilMensagem.mensagemInformacao("Operação realizada com sucesso!");
+        } catch (Exception e) {
+            UtilMensagem.mensagemErro("Erro ao persistir: " + e.getMessage());
+        }
     }
 
     public void removerComentario(int index) {

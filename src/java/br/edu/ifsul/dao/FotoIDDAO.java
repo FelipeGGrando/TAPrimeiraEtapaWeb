@@ -26,11 +26,12 @@ public class FotoIDDAO<T> extends DAOGenerico<FotoID> implements Serializable {
 
     public FotoIDDAO() {
         super();
+        super.setOrdem("numero");
         super.setClassePersistente(FotoID.class);
     }
     @Override
     public FotoID getObjectById(Integer id) throws Exception {
-        FotoID obj = (FotoID) super.getEm().find(super.getClassePersistente(), id);     
+        FotoID obj = (FotoID) super.getEm().find(super.getClassePersistente(), id);
         return obj;
     }
 

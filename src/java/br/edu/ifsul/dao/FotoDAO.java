@@ -6,6 +6,8 @@
 package br.edu.ifsul.dao;
 
 import br.edu.ifsul.modelo.Foto;
+import br.edu.ifsul.modelo.FotoID;
+import br.edu.ifsul.modelo.Galeria;
 import java.io.Serializable;
 import java.util.List;
 import javax.ejb.Stateful;
@@ -27,12 +29,13 @@ public class FotoDAO<T> extends DAOGenerico<Foto> implements Serializable {
         super();
         super.setClassePersistente(Foto.class);
     }
-    @Override
-    public Foto getObjectById(Integer id) throws Exception {
-        Foto obj = (Foto) super.getEm().find(super.getClassePersistente(), id);
-        //Inicializando a coleção de objetos para não ocorrer lazy exception
-        obj.getGalerias().size();
-        obj.getComentarios().size();
+    public Foto getObjectById(FotoID id) throws Exception {
+        FotoID idObj = new FotoID();
+        idObj.setNumero(id.getNumero());
+        idObj.setGaleria(super.getEm().find(Galeria.class, id.getGaleria().getId()));
+        Foto obj = super.getEm().find(Foto.class, idObj);
+        obj.getComentarios();
+        obj.getGalerias();
         return obj;
     }
 
