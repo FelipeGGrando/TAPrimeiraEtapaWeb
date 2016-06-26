@@ -42,4 +42,20 @@ public class ControleRelatorios implements Serializable {
         UtilRelatorios.imprimeRelatorio("relatorioPostagens", parametros, daoPostagem.getListaTodos());
     }
 
+    public PessoaDAO<Pessoa> getDaoPessoa() {
+        return daoPessoa;
+    }
+
+    public void setDaoPessoa(PessoaDAO<Pessoa> daoPessoa) {
+        this.daoPessoa = daoPessoa;
+    }
+
+    public PostagemDAO<Postagem> getDaoPostagem() {
+        return daoPostagem;
+    }
+
+    public void setDaoPostagem(PostagemDAO<Postagem> daoPostagem) {
+        this.daoPostagem = daoPostagem;
+    }
+
 }
